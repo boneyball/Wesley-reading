@@ -3,199 +3,233 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Module 2 Express</title>
-<meta name="theme-color" content="#16181c">
+<title>Wesley's Reading</title>
+<meta name="theme-color" content="#1f4fd8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Math Express">
+<meta name="apple-mobile-web-app-title" content="Reading">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-/* VOICE everyday learning for a 4th grader who loves trains and buses
-   IDEA a transit line: each Module 2 standard is a coloured line, each problem a stop
-   PICTURE the route strip with a train that moves one stop per answer, then the big problem card
-   COLOUR white or near-black ground, black signage band, six line colours, the active line leads
-   TYPE Overpass (highway-signage lettering) 800 + 400
-   LAYOUT sign band with line bullets, route, then problem + keypad side by side; stacked on a phone */
-:root{color-scheme:light dark;--bg:light-dark(#ffffff,#111316);--ink:light-dark(#15171a,#f1f2f4);--muted:light-dark(#575d66,#a7adb6);--panel:light-dark(#f2f3f5,#1c1f24);--rule:light-dark(#d5d8de,#353941);--ok:#0a8f5a;--bad:#d8342a;--line:#1565d8}
+/* VOICE everyday, cheerful, for a 9-year-old; parent tools tucked away
+   IDEA a gold-star reading chart: stars on a calendar, a ticket stamp for each finished book, a gift box every 7 days
+   PICTURE the big timer ring that fills gold as today's 30 minutes add up
+   COLOUR cobalt band, white ground, star gold, gift-box red
+   TYPE Fredoka 700 headings + Nunito body
+   LAYOUT band with streak, tab row, then the view; ring left and week right on wide screens, stacked on a phone */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#10131a);--ink:light-dark(#141821,#f2f4f8);--muted:light-dark(#5a6170,#a6adbb);--panel:light-dark(#f1f4fb,#1a1f2a);--rule:light-dark(#d7dce6,#323a49);--blue:#1f4fd8;--gold:#ffbf1f;--goldd:#c98a00;--red:#e8402f;--ok:#0f9d6b}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 Overpass,system-ui,sans-serif;overflow-x:clip}
-button{font:inherit;color:inherit;cursor:pointer}
-button:focus-visible{outline:3px solid var(--line);outline-offset:2px}
-.sign{background:#16181c;color:#fff;padding:18px max(4vw,16px) 16px}
-.sign h1{margin:0;font-size:clamp(30px,5vw,44px);line-height:1.05;letter-spacing:-.02em;font-weight:800}
-.sign p{margin:4px 0 14px;color:#c4c8ce;font-size:15px}
-.lines{display:flex;flex-wrap:wrap;gap:8px}
-.lines button{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 14px 4px 5px;border-radius:24px;border:2px solid #3a3e45;background:#22252a;color:#fff;font-weight:600;font-size:15px}
-.lines button[aria-pressed=true]{background:#fff;color:#16181c;border-color:#fff}
-.bul{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;color:#fff;font-weight:800;font-size:16px;flex:none}
-.ride{padding:14px max(4vw,16px) 0;max-width:1100px;margin:0 auto}
-.stat{display:flex;justify-content:space-between;gap:12px;font-size:15px;color:var(--muted);font-weight:600}
-.stat b{color:var(--ink)}
-.track{position:relative;height:86px}
-#route{position:absolute;inset:0;width:100%;height:100%}
-.train{position:absolute;top:24px;width:52px;height:30px;margin-left:-26px;transition:left .6s cubic-bezier(.5,0,.3,1)}
-@media(prefers-reduced-motion:reduce){.train{transition:none}}
-.play{max-width:1100px;margin:0 auto;padding:8px max(4vw,16px) 28px;display:grid;gap:18px}
-@media(min-width:860px){.play{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start}}
-.card{background:var(--panel);border-radius:18px;padding:clamp(18px,3vw,28px);border-top:8px solid var(--line)}
-.tag{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--muted);margin-bottom:10px}
-.tag .bul{width:26px;height:26px;font-size:14px}
-.q{font-size:clamp(22px,3.4vw,30px);line-height:1.3;font-weight:600;margin:0 0 12px}
-.q .big{font-size:clamp(30px,6vw,46px);font-weight:800;letter-spacing:-.01em;white-space:nowrap}
-.fig svg{width:100%;max-width:380px;height:auto;display:block}
-.ans{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
-.box{min-width:120px;min-height:60px;padding:8px 16px;border-radius:12px;border:3px solid var(--rule);background:var(--bg);font-size:32px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
-.box.on{border-color:var(--line)}
-.box small{font-size:16px;font-weight:600;color:var(--muted)}
-.box .cur{width:3px;height:30px;background:var(--line);animation:bl 1s steps(1) infinite}
-@keyframes bl{50%{opacity:0}}
-.rlab{font-size:22px;font-weight:800}
-.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
-.choices button{min-height:60px;border-radius:12px;border:3px solid var(--rule);background:var(--bg);font-size:22px;font-weight:800}
-.choices button.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--bg))}
-.choices button.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--bg))}
-.fb{margin-top:16px;border-radius:12px;padding:14px 16px;background:var(--bg);border-left:6px solid var(--ok)}
-.fb.bad{border-color:var(--bad)}
-.fb h3{margin:0 0 6px;font-size:21px}
-.fb p{margin:6px 0}
-.am{border-collapse:collapse;margin:8px 0;font-variant-numeric:tabular-nums}
-.am td,.am th{border:2px solid var(--rule);padding:6px 10px;text-align:center;white-space:nowrap}
-.am th{background:color-mix(in srgb,var(--line) 16%,var(--bg))}
-.am td{background:var(--panel);font-weight:600}
-.tape{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center;margin:8px 0;font-size:15px}
-.tape .bar{display:flex;flex-wrap:wrap;gap:3px}
-.tape .bar span{min-width:38px;padding:3px 6px;text-align:center;border:2px solid var(--line);border-radius:4px;font-weight:700}
-.steps{margin:6px 0;padding-left:20px;font-variant-numeric:tabular-nums}
-.pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.pad button{min-height:64px;border-radius:14px;border:2px solid var(--rule);background:var(--panel);font-size:28px;font-weight:800}
-.pad button:active{transform:translateY(2px)}
-.pad .go{background:var(--line);border-color:var(--line);color:#fff;font-size:21px}
-.pad .wide{grid-column:1/-1;min-height:56px}
-.next{margin-top:12px;min-height:54px;padding:0 26px;border:0;border-radius:14px;background:var(--line);color:#fff;font-size:20px;font-weight:800}
-.end h2{font-size:clamp(32px,5vw,48px);line-height:1.05;margin:0 0 8px;letter-spacing:-.02em}
-.end .btns{display:flex;flex-wrap:wrap;gap:10px}
-.end .alt{background:var(--panel);color:var(--ink);border:2px solid var(--rule)}
-.tot h3{font-size:18px;margin:4px 0 10px}
-.row{display:grid;grid-template-columns:8.5em minmax(0,1fr) 4.5em;gap:10px;align-items:center;font-size:15px;margin:6px 0}
-.row .m{height:12px;border-radius:6px;background:var(--rule);overflow:hidden}
-.row .m i{display:block;height:100%}
-.row .v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
-.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 Nunito,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.disp{font-family:Fredoka,Nunito,system-ui,sans-serif;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.top{background:var(--blue);color:#fff;padding:16px max(4vw,16px) 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
+.top h1{margin:0;font-size:clamp(30px,5vw,44px)}
+.streak{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border-radius:30px;padding:6px 16px 6px 8px;font-weight:800}
+.streak b{font-family:Fredoka,Nunito,system-ui,sans-serif;font-size:26px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--rule);display:flex;overflow-x:auto;padding:0 max(4vw,8px)}
+nav a{flex:none;padding:12px 14px;min-height:48px;text-decoration:none;color:var(--muted);font-weight:800;border-bottom:4px solid transparent;margin-bottom:-2px;white-space:nowrap}
+nav a[aria-current=page]{color:var(--ink);border-color:var(--blue)}
+nav .dot{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--red);color:#fff;font-size:13px;text-align:center;margin-left:4px}
+main{max-width:1080px;margin:0 auto;padding:20px max(4vw,16px) 48px}
+.grid2{display:grid;gap:22px}
+@media(min-width:820px){.grid2{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
+.card{background:var(--panel);border-radius:20px;padding:clamp(16px,3vw,24px)}
+.card h2{margin:0 0 10px;font-size:24px}
+.ringbox{display:grid;justify-items:center;gap:14px}
+.ring{position:relative;width:min(300px,78vw);aspect-ratio:1}
+.ring svg{position:absolute;inset:0;width:100%;height:100%}
+.ring .c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring .t{font-family:Fredoka,Nunito,system-ui,sans-serif;font-weight:700;font-size:clamp(48px,13vw,68px);line-height:1;font-variant-numeric:tabular-nums}
+.ring .l{color:var(--muted);font-weight:800;font-size:15px}
+.arc{transition:stroke-dashoffset .5s linear}
+.go{min-height:60px;min-width:220px;padding:0 30px;border:0;border-radius:30px;background:var(--blue);color:#fff;font-family:Fredoka,Nunito,system-ui,sans-serif;font-size:24px;font-weight:700;box-shadow:0 4px 0 #1338a3}
+.go:active{transform:translateY(3px);box-shadow:0 1px 0 #1338a3}
+.go.pause{background:var(--red);box-shadow:0 4px 0 #a82618}
+.sub{color:var(--muted);font-size:15px;margin:0}
+label.f{display:grid;gap:4px;font-weight:800;font-size:15px}
+input,select,textarea{font-size:16px;min-height:44px;padding:8px 12px;border-radius:12px;border:2px solid var(--rule);background:var(--bg)}
+textarea{min-height:120px;width:100%;resize:vertical}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;text-align:center}
+.week div{display:grid;justify-items:center;gap:2px;font-size:13px;font-weight:800;color:var(--muted)}
+.week .s{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:2px solid var(--rule)}
+.week .today .s{border-color:var(--blue);border-width:3px}
+.slots{display:grid;grid-template-columns:repeat(7,minmax(0,1fr)) 56px;gap:5px;align-items:center;margin:10px 0 4px}
+.slots i{height:16px;border-radius:8px;background:var(--rule)}
+.slots i.on{background:var(--gold)}
+.banner{display:flex;align-items:center;gap:14px;background:color-mix(in srgb,var(--red) 12%,var(--bg));border:2px solid var(--red);border-radius:18px;padding:12px 16px;margin-bottom:18px;text-decoration:none;color:inherit;font-weight:800}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .h{text-align:center;font-size:13px;font-weight:800;color:var(--muted)}
+.cal button{aspect-ratio:1;border-radius:14px;border:2px solid var(--rule);background:var(--bg);display:grid;place-items:center;padding:2px;position:relative;font-weight:800;font-size:14px}
+.cal button .n{position:absolute;top:3px;left:7px;font-size:12px;color:var(--muted)}
+.cal button.done{background:color-mix(in srgb,var(--gold) 22%,var(--bg));border-color:var(--gold)}
+.cal button.tod{border-color:var(--blue);border-width:3px}
+.cal button:disabled{opacity:.35;cursor:default}
+.cal .bar{width:70%;height:6px;border-radius:3px;background:var(--rule);overflow:hidden;align-self:end;margin-bottom:8px}
+.cal .bar i{display:block;height:100%;background:var(--blue)}
+.mhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.mhead h2{margin:0}
+.icon{min-width:44px;min-height:44px;border-radius:12px;border:2px solid var(--rule);background:var(--bg);font-weight:800;font-size:20px}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(8em,1fr));gap:12px;margin-top:16px}
+.figs div{background:var(--bg);border-radius:14px;padding:10px 14px}
+.figs b{display:block;font-family:Fredoka,Nunito,system-ui,sans-serif;font-size:30px;line-height:1.1}
+.figs span{font-size:14px;color:var(--muted);font-weight:700}
+.prog{height:16px;border-radius:8px;background:var(--rule);overflow:hidden;margin:8px 0 18px}
+.prog i{display:block;height:100%;background:var(--gold)}
+.book{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:2px solid var(--rule)}
+.chk{width:48px;height:48px;border-radius:14px;border:3px solid var(--rule);background:var(--bg);display:grid;place-items:center}
+.chk.on{background:var(--ok);border-color:var(--ok)}
+.bt{font-weight:800;font-size:18px;line-height:1.25}
+.ba{color:var(--muted);font-size:15px}
+.lex{font-family:Fredoka,Nunito,system-ui,sans-serif;font-weight:700;font-size:15px;padding:3px 10px;border-radius:10px;background:color-mix(in srgb,var(--blue) 14%,var(--bg));color:var(--blue);white-space:nowrap}
+.stamp{display:inline-block;margin-top:4px;padding:1px 10px;border:2px solid var(--ok);border-radius:6px;color:var(--ok);font-weight:800;font-size:13px;transform:rotate(-2deg);white-space:nowrap}
+.now{display:inline-block;margin-top:4px;padding:1px 10px;border-radius:6px;background:var(--gold);color:#3a2800;font-weight:800;font-size:13px}
+.mini{border:0;background:none;color:var(--muted);font-weight:800;font-size:14px;padding:6px 4px;min-height:36px}
+.done-row .bt{text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:var(--ok)}
+.add{display:grid;gap:10px;grid-template-columns:minmax(0,2fr) minmax(0,1.4fr) minmax(0,.8fr) auto;align-items:end;margin-top:16px}
+@media(max-width:640px){.add{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.add .wide{grid-column:1/-1}}
+.btn{min-height:46px;padding:0 18px;border-radius:14px;border:0;background:var(--blue);color:#fff;font-weight:800}
+.btn.alt{background:var(--bg);color:var(--ink);border:2px solid var(--rule)}
+.btn.red{background:var(--red)}
+.boxes{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px}
+.gift{border:0;background:none;padding:0;display:grid;justify-items:center;gap:4px;font-weight:800;font-size:14px;color:var(--muted)}
+.gift svg{width:100%;max-width:140px}
+.gift:hover svg{animation:wig .5s}
+@keyframes wig{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.hist{list-style:none;padding:0;margin:0}
+.hist li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:2px solid var(--rule);font-weight:700}
+.hist time{color:var(--muted);white-space:nowrap;font-size:15px}
+.empty{color:var(--muted);font-weight:700}
+dialog{border:0;border-radius:20px;padding:22px;max-width:min(420px,92vw);background:var(--bg);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,14,30,.55)}
+dialog h3{margin:0 0 10px;font-size:24px}
+.dbtns{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:18px}
+.dbtns button{min-height:46px;padding:0 18px;border-radius:14px;border:2px solid var(--rule);background:var(--bg);font-weight:800}
+.dbtns button.p{background:var(--blue);border-color:var(--blue);color:#fff}
+.dbtns button.r{background:var(--red);border-color:var(--red);color:#fff}
+#cel{position:fixed;inset:0;z-index:20;display:none;place-items:center;background:rgba(10,14,30,.72);padding:20px}
+#cel.on{display:grid}
+#cel .in{background:var(--bg);border-radius:26px;padding:26px;text-align:center;max-width:380px;width:100%}
+#cel h2{font-size:34px;margin:8px 0 6px}
+#cel p{margin:0 0 16px;font-weight:700}
+#cel .pz{font-family:Fredoka,Nunito,system-ui,sans-serif;font-size:28px;color:var(--red);margin:6px 0 14px}
+.pop{animation:pop .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.2) rotate(-30deg)}}
+.lid{transition:transform .6s cubic-bezier(.3,1.5,.5,1);transform-origin:70px 60px}
+.opened .lid{transform:translate(18px,-46px) rotate(24deg)}
+.shake{animation:wig .25s 3}
+@media(prefers-reduced-motion:reduce){.pop,.shake,.gift:hover svg{animation:none}.lid,.arc{transition:none}}
+.sec{margin-top:22px}
+.row2{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.note{font-size:14px;color:var(--muted);margin:8px 0 0}
 </style>
 </head>
 <body>
-<header class="sign">
-  <h1>Module 2 Express</h1>
-  <p>Wesley's practice line · 10 stops a trip · pick a line or ride them all</p>
-  <nav class="lines" id="lines" aria-label="Choose a line"></nav>
+<header class="top">
+  <h1>Wesley's Reading</h1>
+  <div class="streak" id="streak"></div>
 </header>
-<section class="ride">
-  <div class="stat"><span id="where"></span><span id="score"></span></div>
-  <div class="track" id="track"><svg id="route" aria-hidden="true"></svg>
-    <svg class="train" id="train" viewBox="0 0 52 30" aria-hidden="true"><rect x="1" y="1" width="50" height="24" rx="8" fill="var(--line)"/><rect x="6" y="6" width="9" height="8" rx="2" fill="#fff"/><rect x="18" y="6" width="9" height="8" rx="2" fill="#fff"/><rect x="30" y="6" width="9" height="8" rx="2" fill="#fff"/><rect x="42" y="6" width="6" height="12" rx="2" fill="#fff" opacity=".85"/><circle cx="12" cy="27" r="3" fill="var(--ink)"/><circle cx="40" cy="27" r="3" fill="var(--ink)"/></svg>
-  </div>
-</section>
-<main class="play">
-  <div class="card" id="card"></div>
-  <div id="side"></div>
-</main>
+<nav id="nav" aria-label="Sections">
+  <a href="#today">Today</a><a href="#calendar">Calendar</a><a href="#books">Books</a><a href="#prizes">Prizes</a><a href="#parent">Parent</a>
+</nav>
+<main id="view"></main>
+<div id="cel" role="dialog" aria-modal="true"><div class="in" id="celin"></div></div>
+<dialog id="dlg"></dialog>
 <script>
 {
 const $=s=>document.querySelector(s);
-const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-const pick=a=>a[R(0,a.length-1)];
-const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
-const f=n=>Number(n).toLocaleString('en-US');
-const L={A:{n:'Measure',full:'Measurement, area & perimeter',c:'#e03a2f'},B:{n:'Multiply',full:'Multi-digit multiplication',c:'#1565d8'},C:{n:'Divide',full:'Division with remainders',c:'#7b3fe4'},D:{n:'Compare',full:'Times as many',c:'#d98a00'},E:{n:'Factors',full:'Factors, multiples, primes',c:'#00838f'},F:{n:'Patterns',full:'Number patterns',c:'#d6336c'}};
-const ALL={n:'All lines',c:'#15171a'};
-const isP=n=>{if(n<2)return false;for(let i=2;i*i<=n;i++)if(n%i==0)return false;return true};
-const pairs=n=>{const p=[];for(let i=1;i*i<=n;i++)if(n%i==0)p.push(i+' × '+n/i);return p};
-const parts=n=>{const s=String(n),o=[];[...s].forEach((d,i)=>{if(d!='0')o.push(+d*10**(s.length-1-i))});return o.length?o:[0]};
-const area=(a,b)=>{const r=parts(a),c=parts(b),pp=[];let h='<table class="am"><tr><th>×</th>'+c.map(x=>'<th>'+f(x)+'</th>').join('')+'</tr>';r.forEach(x=>{h+='<tr><th>'+f(x)+'</th>'+c.map(y=>{pp.push(x*y);return '<td>'+f(x*y)+'</td>'}).join('')+'</tr>'});return h+'</table><p>Add the parts: '+pp.map(f).join(' + ')+' = <b>'+f(a*b)+'</b></p>'};
-const divs=(n,d)=>{let r=n;const st=[];for(const p of [1000,100,10,1]){const k=Math.floor(r/(d*p));if(k>0){st.push(d+' × '+f(k*p)+' = '+f(d*k*p)+', leaving '+f(r-d*k*p));r-=d*k*p}}return '<ol class="steps">'+st.map(s=>'<li>'+s+'</li>').join('')+'</ol>'};
-const tape=(rows)=>'<div class="tape">'+rows.map(([lab,k,v])=>'<span>'+lab+'</span><div class="bar">'+Array(k).fill('<span>'+v+'</span>').join('')+'</div>').join('')+'</div>';
-const rect=(Lv,W,ll,wl)=>{const s=Math.min(210/Lv,110/W),w=Lv*s,h=W*s,x=(300-w)/2-20,y=30;return '<svg viewBox="0 0 300 '+(h+44)+'"><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="color-mix(in srgb,var(--line) 18%,transparent)" stroke="var(--line)" stroke-width="3"/><text x="'+(x+w/2)+'" y="20" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">'+ll+'</text><text x="'+(x+w+10)+'" y="'+(y+h/2+6)+'" font-size="17" font-weight="700" fill="currentColor">'+wl+'</text></svg>'};
-const G={
-A:[()=>{const u=pick([['ft','in',12],['yd','ft',3],['yd','in',36],['hr','min',60],['min','sec',60],['kg','g',1000],['L','mL',1000],['m','cm',100],['km','m',1000],['lb','oz',16]]),n=R(2,9);return {q:'<span class="big">'+n+' '+u[0]+' = ? '+u[1]+'</span>',ans:n*u[2],unit:u[1],ex:'<p>1 '+u[0]+' = '+f(u[2])+' '+u[1]+', so multiply: '+n+' × '+f(u[2])+' = <b>'+f(n*u[2])+' '+u[1]+'</b>.</p>'}},
-()=>{const u=pick([['ft','in',12],['hr','min',60],['lb','oz',16],['m','cm',100]]),n=R(2,8),m=R(1,u[2]-1);return {q:'<span class="big">'+n+' '+u[0]+' '+m+' '+u[1]+' = ? '+u[1]+'</span>',ans:n*u[2]+m,unit:u[1],ex:'<p>'+n+' '+u[0]+' = '+n+' × '+u[2]+' = '+f(n*u[2])+' '+u[1]+'. Then add the extra '+m+': <b>'+f(n*u[2]+m)+' '+u[1]+'</b>.</p>'}},
-()=>{const c=pick([10,20,25,50]),m=R(1,5);return {q:'A ribbon is '+m+' m long. It is cut into pieces that are each '+c+' cm long. How many pieces?',ans:100*m/c,unit:'pieces',ex:'<p>Change meters to centimeters first: '+m+' m = '+100*m+' cm. Then '+100*m+' ÷ '+c+' = <b>'+100*m/c+' pieces</b>.</p>'}},
-()=>{const Lv=R(4,15),W=R(2,Math.min(Lv-1,11)),t=R(0,3),u=pick(['m','ft','cm','yd']);
-if(t==0)return {q:'What is the <b>area</b> of this rectangle?',fig:rect(Lv,W,Lv+' '+u,W+' '+u),ans:Lv*W,unit:'sq '+u,ex:'<p>Area = length × width = '+Lv+' × '+W+' = <b>'+Lv*W+' square '+u+'</b>.</p>'};
-if(t==1)return {q:'What is the <b>perimeter</b> of this rectangle?',fig:rect(Lv,W,Lv+' '+u,W+' '+u),ans:2*(Lv+W),unit:u,ex:'<p>Perimeter = add all four sides: '+Lv+' + '+W+' + '+Lv+' + '+W+' = <b>'+2*(Lv+W)+' '+u+'</b>.</p>'};
-if(t==2)return {q:'The area is <b>'+Lv*W+' sq '+u+'</b>. What is the missing side?',fig:rect(Lv,W,Lv+' '+u,'?'),ans:W,unit:u,ex:'<p>Length × ? = area, so ? = '+Lv*W+' ÷ '+Lv+' = <b>'+W+' '+u+'</b>.</p>'};
-return {q:'The perimeter is <b>'+2*(Lv+W)+' '+u+'</b>. What is the missing side?',fig:rect(Lv,W,Lv+' '+u,'?'),ans:W,unit:u,ex:'<p>Take away the two long sides: '+2*(Lv+W)+' − '+Lv+' − '+Lv+' = '+2*W+'. The two short sides share that, so '+2*W+' ÷ 2 = <b>'+W+' '+u+'</b>.</p>'}}],
-B:[()=>{const a=R(2,9),d=R(2,4),b=R(10**(d-1)+1,10**d-1);return {q:'<span class="big">'+a+' × '+f(b)+' = ?</span>',ans:a*b,ex:area(a,b)}},
-()=>{const a=R(11,99),b=R(11,99);return {q:'<span class="big">'+a+' × '+b+' = ?</span>',ans:a*b,ex:area(a,b)}},
-()=>{const a=R(12,64),b=R(11,39),t=pick([['A city bus holds '+a+' riders. How many riders fit on '+b+' full buses?','riders'],['A train car has '+a+' seats. How many seats are on '+b+' train cars?','seats'],['Wesley rides his bike '+a+' miles a month. How many miles is that in '+b+' months?','miles']]);return {q:t[0],ans:a*b,unit:t[1],ex:'<p>Equation: '+a+' × '+b+' = ?</p>'+area(a,b)}}],
-C:[()=>{const d=R(2,9),q=R(12,Math.floor(9999/d)),r=R(0,2)?R(1,d-1):0,n=d*q+r;return {q:'<span class="big">'+f(n)+' ÷ '+d+' = ?</span>',kind:'qr',ans:[q,r],ex:divs(n,d)+'<p>Quotient '+f(q)+', remainder '+r+'. Check: '+d+' × '+f(q)+' + '+r+' = '+f(n)+'.</p>'}},
-()=>{const d=R(4,9),q=R(8,30),r=R(1,d-1),n=d*q+r,t=R(0,1);return t?{q:n+' students are going on a field trip. Each van holds '+d+'. How many vans are needed so everyone gets a ride?',ans:q+1,unit:'vans',ex:'<p>'+n+' ÷ '+d+' = '+q+' R'+r+'. '+q+' vans are full, but '+r+' students still need a seat, so you need <b>'+(q+1)+' vans</b>.</p>'}:{q:'A bakery packs '+n+' cookies, '+d+' to a box. How many cookies are left after filling as many boxes as it can?',ans:r,unit:'cookies',ex:'<p>'+n+' ÷ '+d+' = '+q+' R'+r+'. '+q+' full boxes use '+d*q+' cookies, leaving <b>'+r+'</b>.</p>'}}],
-D:[()=>{const a=R(3,12),k=R(2,9),t=pick([['Wesley rode his bike '+a+' miles. His dad rode '+k+' times as far. How many miles did his dad ride?','miles','Wesley','Dad'],[''+a+' people wait at a bus stop. The train platform has '+k+' times as many people. How many are on the platform?','people','Bus stop','Platform']]);return {q:t[0],ans:a*k,unit:t[1],ex:tape([[t[2],1,a],[t[3],k,a]])+'<p>"'+k+' times as many" means multiply: '+a+' × '+k+' = <b>'+a*k+'</b>.</p>'}},
-()=>{const s=R(6,15),k=R(3,9),b=s*k,t=pick([['An express train is '+b+' meters long. That is '+k+' times as long as a city bus. How long is the bus?','m','Bus','Train'],['A subway car has '+b+' seats. That is '+k+' times as many seats as a van. How many seats does the van have?','seats','Van','Subway car']]);return {q:t[0],ans:s,unit:t[1],ex:tape([[t[2],1,'?'],[t[3],k,'?']])+'<p>'+k+' equal parts make '+b+', so one part is '+b+' ÷ '+k+' = <b>'+s+'</b>. Equation: ? × '+k+' = '+b+'.</p>'}},
-()=>{const s=R(4,15),k=R(2,8),b=s*k,more=R(0,1);return {q:'The express train carried '+b+' riders. The bus carried '+s+'. '+(more?'How many <b>more</b> riders did the train carry?':'The train carried how many <b>times as many</b> riders as the bus?'),ans:more?b-s:k,unit:more?'more':'times',ex:more?'<p>"How many more" means subtract: '+b+' − '+s+' = <b>'+(b-s)+'</b>.</p>':'<p>"How many times as many" means divide: '+b+' ÷ '+s+' = <b>'+k+'</b>.</p>'}}],
-E:[()=>{const pr=R(0,1);let n;do n=R(2,100);while(isP(n)!=!!pr);return {q:'Is <span class="big">'+n+'</span> prime or composite?',kind:'ch',ch:['Prime','Composite'],ans:pr?'Prime':'Composite',ex:'<p>Factor pairs of '+n+': '+pairs(n).join(', ')+'.</p><p>'+(pr?'Only one pair (1 and itself), so it is <b>prime</b>.':'More than one pair, so it is <b>composite</b>.')+'</p>'}},
-()=>{const d=R(3,9),y=R(0,1);let n;do n=R(12,100);while((n%d==0)!=!!y);return {q:'Is '+n+' a multiple of '+d+'?',kind:'ch',ch:['Yes','No'],ans:y?'Yes':'No',ex:y?'<p>'+d+' × '+n/d+' = '+n+', so <b>yes</b>.</p>':'<p>'+d+' × '+Math.floor(n/d)+' = '+d*Math.floor(n/d)+' and '+d+' × '+(Math.floor(n/d)+1)+' = '+d*(Math.floor(n/d)+1)+'. '+n+' is skipped, so <b>no</b>.</p>'}},
-()=>{const n=pick([12,16,18,20,24,28,30,32,36,40,42,45,48,50,54,56,60,63,64,72,80,84,90,96,100]),p=pairs(n);return {q:'How many factor pairs does <span class="big">'+n+'</span> have?',ans:p.length,unit:'pairs',ex:'<p>'+p.join(', ')+' — that is <b>'+p.length+' pairs</b>.</p>'}},
-()=>{const n=pick([24,30,36,40,42,48,54,56,60,64,72,80,84,90,96]),fs=[];for(let i=2;i<n;i++)if(n%i==0&&i<=15)fs.push(i);const a=pick(fs),no=shuf([...Array(14)].map((_,i)=>i+2).filter(i=>n%i)).slice(0,3);return {q:'Which number is a factor of '+n+'?',kind:'ch',ch:shuf([a,...no].map(String)),ans:String(a),ex:'<p>'+a+' × '+n/a+' = '+n+', so <b>'+a+'</b> is a factor. The others leave a remainder.</p>'}}],
-F:[()=>{const s=R(1,20),k=R(2,12),t=[0,1,2,3].map(i=>s+i*k);return {q:'Rule: add '+k+'.<br><span class="big">'+t.join(', ')+', ?</span>',ans:s+4*k,ex:'<p>'+t[3]+' + '+k+' = <b>'+(s+4*k)+'</b>.</p>'}},
-()=>{const s=R(2,5),k=pick([2,3]),t=[0,1,2,3].map(i=>s*k**i);return {q:'Find the rule, then the next number.<br><span class="big">'+t.join(', ')+', ?</span>',ans:s*k**4,ex:'<p>Each number is '+k+' times the one before. '+t[3]+' × '+k+' = <b>'+s*k**4+'</b>.</p>'}},
-()=>{const a=R(3,6),b=R(2,5),n=R(6,12);return {q:'Figure 1 uses '+a+' toothpicks. Each new figure adds '+b+' more. How many toothpicks are in figure '+n+'?',ans:a+(n-1)*b,unit:'toothpicks',ex:'<p>From figure 1 to figure '+n+' is '+(n-1)+' steps of '+b+': '+a+' + '+(n-1)+' × '+b+' = <b>'+(a+(n-1)*b)+'</b>.</p>'}},
-()=>{const s=R(1,9),k=2*R(1,4),y=R(0,1),x=y?s+k*R(8,14):s+k*R(8,14)+1,t=[0,1,2,3].map(i=>s+i*k);return {q:'The rule is add '+k+': '+t.join(', ')+', … Will '+x+' be in this pattern?',kind:'ch',ch:['Yes','No'],ans:y?'Yes':'No',ex:'<p>Starting at '+s+' and adding an even number keeps every number '+(s%2?'odd':'even')+'. '+(y?x+' = '+s+' + '+k+' × '+(x-s)/k+', so <b>yes</b>.':x+' is '+(x%2?'odd':'even')+', so <b>no</b>.')+'</p>'}}]};
-let stats={};try{stats=JSON.parse(localStorage.getItem('m2x')||'{}')}catch(e){}
-const save=()=>{try{localStorage.setItem('m2x',JSON.stringify(stats))}catch(e){}};
-const S={line:'all',list:[],res:[],i:0,inp:['',''],fld:0,done:false,picked:null,misses:[]};
-let last='';
-const gen=t=>{let g,k;do{k=R(0,G[t].length-1);g=t+k}while(g==last&&G[t].length>1);last=g;return Object.assign({t,kind:'num'},G[t][k]())};
-const trip=(list)=>{S.list=list||[...Array(10)].map(()=>gen(S.line=='all'?pick('ABCDEF'.split('')):S.line));S.res=[];S.i=0;S.misses=[];start()};
-const start=()=>{S.inp=['',''];S.fld=0;S.done=false;S.picked=null;render()};
-const cur=()=>S.list[S.i];
-const col=()=>S.i<S.list.length?L[cur().t].c:(S.line=='all'?ALL.c:L[S.line].c);
-const lines=()=>{$('#lines').innerHTML=[['all',ALL]].concat(Object.entries(L)).map(([k,v])=>'<button data-l="'+k+'" aria-pressed="'+(S.line==k)+'"><span class="bul" style="background:'+(k=='all'?'#5d636c':v.c)+'">'+(k=='all'?'★':k)+'</span>'+v.n+'</button>').join('')};
-const draw=()=>{const s=$('#route'),W=s.clientWidth,H=s.clientHeight,n=S.list.length,m=26,y=58,x=i=>n<2?W/2:m+i*(W-2*m)/(n-1);let h='<line x1="'+m+'" y1="'+y+'" x2="'+(W-m)+'" y2="'+y+'" stroke="var(--rule)" stroke-width="8" stroke-linecap="round"/>';
-if(S.res.length)h+='<line x1="'+m+'" y1="'+y+'" x2="'+x(S.res.length-1)+'" y2="'+y+'" stroke="'+col()+'" stroke-width="8" stroke-linecap="round"/>';
-S.list.forEach((p,i)=>{const r=S.res[i],c=L[p.t].c,on=i==S.i;h+='<circle cx="'+x(i)+'" cy="'+y+'" r="'+(on?12:9)+'" fill="'+(r=='ok'?c:'var(--bg)')+'" stroke="'+(r=='miss'?'var(--bad)':r?c:on?col():'var(--muted)')+'" stroke-width="'+(on?5:3)+'"/>';if(r=='miss')h+='<path d="M'+(x(i)-4)+' '+(y-4)+'l8 8m0-8l-8 8" stroke="var(--bad)" stroke-width="2.5"/>'});
-s.innerHTML=h;$('#train').style.left=x(Math.min(S.i,n-1))+'px'};
-const ro=new ResizeObserver(draw);ro.observe($('#track'));
-const box=i=>'<div class="box'+(S.fld==i&&!S.done?' on':'')+'" data-f="'+i+'"><span>'+(S.inp[i]?f(S.inp[i]):'')+'</span>'+(S.fld==i&&!S.done?'<i class="cur"></i>':'')+'</div>';
-const render=()=>{document.documentElement.style.setProperty('--line',col());lines();
-const ok=S.res.filter(r=>r=='ok').length;$('#score').innerHTML='<b>'+ok+'</b> correct';
-if(S.i>=S.list.length)return end();
-const p=cur(),l=L[p.t];$('#where').innerHTML='Stop <b>'+(S.i+1)+'</b> of '+S.list.length;
-let a='';if(p.kind=='num')a=box(0)+(p.unit?'<small class="rlab" style="font-size:18px;color:var(--muted)">'+p.unit+'</small>':'');
-else if(p.kind=='qr')a=box(0)+'<span class="rlab">R</span>'+box(1);
-else a='<div class="choices">'+p.ch.map(c=>'<button data-c="'+c+'" class="'+(S.done&&c==p.ans?'ok':S.done&&c==S.picked?'bad':'')+'"'+(S.done?' disabled':'')+'>'+c+'</button>').join('')+'</div>';
-let fb='';if(S.done){const good=S.res[S.i]=='ok';fb='<div class="fb'+(good?'':' bad')+'"><h3>'+(good?pick(['Correct!','Nice work!','Right on track!','You got it!']):'Not quite. The answer is '+(p.kind=='qr'?f(p.ans[0])+' R'+p.ans[1]:p.kind=='ch'?p.ans:f(p.ans)+(p.unit?' '+p.unit:''))+'.')+'</h3>'+p.ex+'</div><button class="next" id="next">'+(S.i==S.list.length-1?'Last stop →':'Next stop →')+'</button>'}
-$('#card').innerHTML='<div class="tag"><span class="bul" style="background:'+l.c+'">'+p.t+'</span>'+l.full+'</div><p class="q">'+p.q+'</p>'+(p.fig?'<div class="fig">'+p.fig+'</div>':'')+'<div class="ans">'+a+'</div>'+fb;
-$('#side').innerHTML=p.kind=='ch'||S.done?totals():'<div class="pad">'+[7,8,9,4,5,6,1,2,3].map(d=>'<button data-k="'+d+'">'+d+'</button>').join('')+'<button data-k="del" aria-label="Delete">⌫</button><button data-k="0">0</button><button data-k="go" class="go">Check</button></div>';
-draw();if(S.done)$('#next').focus()};
-const totals=()=>'<div class="card tot" style="border-top-color:var(--rule)"><h3>Wesley\'s line totals</h3>'+Object.entries(L).map(([k,v])=>{const s=stats[k]||[0,0],pc=s[1]?Math.round(100*s[0]/s[1]):0;return '<div class="row"><span><span class="bul" style="background:'+v.c+';width:22px;height:22px;font-size:12px">'+k+'</span> '+v.n+'</span><span class="m"><i style="width:'+pc+'%;background:'+v.c+'"></i></span><span class="v">'+s[0]+'/'+s[1]+'</span></div>'}).join('')+'<p class="note">Saved on this device. Weakest line is the best one to ride next.</p></div>';
-const end=()=>{const ok=S.res.filter(r=>r=='ok').length,n=S.list.length;$('#where').innerHTML='<b>Last stop</b>';
-$('#card').innerHTML='<div class="end"><h2>'+(ok==n?'Perfect trip!':ok>=n*.7?'Great ride!':'Trip complete')+'</h2><p class="q">'+ok+' of '+n+' correct'+(S.misses.length?'. '+S.misses.length+' to fix.':'.')+'</p><div class="btns"><button class="next" id="again">New trip</button>'+(S.misses.length?'<button class="next alt" id="redo">Ride the misses ('+S.misses.length+')</button>':'')+'</div></div>';
-$('#side').innerHTML=totals();draw()};
-const check=()=>{const p=cur();let good;
-if(p.kind=='num'){if(S.inp[0]==='')return;good=+S.inp[0]===p.ans}
-else if(p.kind=='qr'){if(S.inp[0]==='')return;if(S.fld==0&&S.inp[1]===''){S.fld=1;return render()}if(S.inp[1]==='')return;good=+S.inp[0]===p.ans[0]&&+S.inp[1]===p.ans[1]}
-else good=S.picked===p.ans;
-S.res[S.i]=good?'ok':'miss';if(!good)S.misses.push(p);const s=stats[p.t]||[0,0];stats[p.t]=[s[0]+(good?1:0),s[1]+1];save();S.done=true;render()};
-const key=k=>{if(S.i>=S.list.length)return;if(S.done){if(k=='go'){S.i++;start()}return}const p=cur();if(p.kind=='ch')return;
-if(k=='go')return check();if(k=='del')S.inp[S.fld]=S.inp[S.fld].slice(0,-1);else if(k=='tab'){if(p.kind=='qr')S.fld=1-S.fld}else if(S.inp[S.fld].length<6)S.inp[S.fld]=(S.inp[S.fld]+k).replace(/^0+(?=\d)/,'');render()};
-document.addEventListener('click',e=>{const b=e.target.closest('button,[data-f]');if(!b)return;
-if(b.dataset.l){S.line=b.dataset.l;trip();return}
-if(b.dataset.k)return key(b.dataset.k);
-if(b.dataset.f&&!S.done){S.fld=+b.dataset.f;return render()}
-if(b.dataset.c&&!S.done){S.picked=b.dataset.c;return check()}
-if(b.id=='next'){S.i++;return start()}
-if(b.id=='again')return trip();
-if(b.id=='redo')return trip(S.misses.map(p=>p))});
-document.addEventListener('keydown',e=>{const t=e.target.closest?e.target.closest('button'):null;if(/^\d$/.test(e.key))key(e.key);else if(e.key=='Backspace')key('del');else if(e.key=='Enter'){if(t&&(t.dataset.c||t.id=='again'||t.id=='redo')&&!(S.done&&t.dataset.c))return;e.preventDefault();key('go')}else if(e.key=='Tab'&&S.i<S.list.length&&cur().kind=='qr'&&!S.done){e.preventDefault();key('tab')}});
-trip();
+const pad=n=>String(n).padStart(2,'0');
+const key=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=k=>{const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};
+const add=(k,n)=>{const d=parse(k);d.setDate(d.getDate()+n);return key(d)};
+const today=()=>key(new Date());
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nice=k=>parse(k).toLocaleDateString('en-US',{month:'short',day:'numeric',year:parse(k).getFullYear()==new Date().getFullYear()?undefined:'numeric'});
+const mmss=s=>Math.floor(s/60)+':'+pad(Math.floor(s%60));
+const lexN=l=>parseInt(String(l).replace(/[^0-9]/g,''))||0;
+const SK='wesley-reading';
+const DEF={goal:30,days:{},timer:null,cel:{},books:[{"id": "b1", "t": "El Deafo", "a": "Cece Bell", "lex": "420L", "g": "Graphic novel, memoir", "done": null, "sec": 0}, {"id": "b2", "t": "Tales of a Fourth Grade Nothing", "a": "Judy Blume", "lex": "470L", "g": "Realistic fiction, humor", "done": null, "sec": 0}, {"id": "b3", "t": "Stuart Little", "a": "E.B. White", "lex": "500L", "g": "Fantasy, adventure", "done": null, "sec": 0}, {"id": "b4", "t": "Fish in a Tree", "a": "Lynda Mullaly Hunt", "lex": "550L", "g": "Realistic fiction", "done": null, "sec": 0}, {"id": "b5", "t": "Because of Mr. Terupt", "a": "Rob Buyea", "lex": "560L", "g": "Realistic fiction", "done": null, "sec": 0}, {"id": "b6", "t": "The One and Only Ivan", "a": "Katherine Applegate", "lex": "570L", "g": "Animal fiction", "done": null, "sec": 0}, {"id": "b7", "t": "The Lemonade War", "a": "Jacqueline Davies", "lex": "630L", "g": "Realistic fiction", "done": null, "sec": 0}, {"id": "b8", "t": "Because of Winn-Dixie", "a": "Kate DiCamillo", "lex": "670L", "g": "Realistic fiction", "done": null, "sec": 0}, {"id": "b9", "t": "Out of My Mind", "a": "Sharon Draper", "lex": "700L", "g": "Realistic fiction", "done": null, "sec": 0}, {"id": "b10", "t": "The Wild Robot", "a": "Peter Brown", "lex": "740L", "g": "Science fiction, nature", "done": null, "sec": 0}, {"id": "b11", "t": "Esperanza Rising", "a": "Pam Muñoz Ryan", "lex": "750L", "g": "Realistic fiction", "done": null, "sec": 0}, {"id": "b12", "t": "One Crazy Summer", "a": "Rita Williams-Garcia", "lex": "750L", "g": "Historical fiction", "done": null, "sec": 0}, {"id": "b13", "t": "Wonder", "a": "R.J. Palacio", "lex": "790L", "g": "Realistic fiction, humor", "done": null, "sec": 0}, {"id": "b14", "t": "Inside Out and Back Again", "a": "Thanhha Lai", "lex": "800L", "g": "Historical fiction, poetry", "done": null, "sec": 0}, {"id": "b15", "t": "Indian Shoes", "a": "Cynthia Leitich Smith", "lex": "820L", "g": "Realistic fiction, short stories", "done": null, "sec": 0}, {"id": "b16", "t": "Frindle", "a": "Andrew Clements", "lex": "830L", "g": "Realistic fiction, humor", "done": null, "sec": 0}, {"id": "b17", "t": "Wish", "a": "Barbara O'Connor", "lex": "850L", "g": "Realistic fiction", "done": null, "sec": 0}, {"id": "b18", "t": "Ramona Quimby, Age 8", "a": "Beverly Cleary", "lex": "860L", "g": "Realistic fiction", "done": null, "sec": 0}, {"id": "b19", "t": "James and the Giant Peach", "a": "Roald Dahl", "lex": "870L", "g": "Fantasy, adventure", "done": null, "sec": 0}, {"id": "b20", "t": "The Lion, the Witch, and the Wardrobe", "a": "C.S. Lewis", "lex": "940L", "g": "Fantasy, adventure", "done": null, "sec": 0}],now:'b2',rewards:["Pick tonight's dessert",'20 extra minutes of Scratch','Choose a weekend bike ride','Pick a train or bus adventure','Stay up 15 minutes later','Choose the family movie','Pick a new book at the bookstore','Breakfast for dinner'],boxes:[],awarded:[]};
+let D=null;try{D=JSON.parse(localStorage.getItem(SK))}catch(e){}
+D=Object.assign(JSON.parse(JSON.stringify(DEF)),D||{});
+const save=()=>{try{localStorage.setItem(SK,JSON.stringify(D))}catch(e){}};
+const goal=()=>D.goal*60;
+const done=k=>(D.days[k]||0)>=goal();
+const live=()=>{let s=D.days[today()]||0;if(D.timer&&D.timer.day==today())s+=(Date.now()-D.timer.start)/1000;return s};
+const streak=()=>{let k=today();if(!done(k))k=add(k,-1);let n=0;while(done(k)){n++;k=add(k,-1)}return n};
+const best=()=>{const ks=Object.keys(D.days).filter(done).sort();let b=0,c=0,p=null;for(const k of ks){c=p&&add(p,1)==k?c+1:1;b=Math.max(b,c);p=k}return b};
+const starPts=(cx,cy,R,r)=>{const p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,q=i%2?r:R;p.push((cx+q*Math.cos(a)).toFixed(1)+','+(cy+q*Math.sin(a)).toFixed(1))}return p.join(' ')};
+const star=(s,on=true)=>'<svg viewBox="0 0 24 24" width="'+s+'" height="'+s+'" aria-hidden="true"><polygon points="'+starPts(12,12.6,11.2,4.8)+'" fill="'+(on?'var(--gold)':'none')+'" stroke="'+(on?'var(--goldd)':'var(--rule)')+'" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+const flame='<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-3-1-6 1-9z" fill="#ffbf1f"/><path d="M12 12c.6 2 3 3 3 5.5a3 3 0 0 1-6 0c0-1.5 1-2.5 1.5-3 .2 1 .8 1.5 1.5 1.5 0-1.5-.4-2.8 0-4z" fill="#ff6a2f"/></svg>';
+const gift=(cls='')=>'<svg viewBox="0 0 140 130" class="'+cls+'" aria-hidden="true"><ellipse cx="70" cy="124" rx="52" ry="5" fill="rgba(0,0,0,.15)"/><rect x="22" y="62" width="96" height="60" rx="6" fill="#e8402f"/><rect x="22" y="62" width="96" height="10" fill="#b92b1d"/><rect x="62" y="62" width="16" height="60" fill="#ffbf1f"/><g class="lid"><rect x="14" y="44" width="112" height="22" rx="6" fill="#ff5a47"/><rect x="62" y="44" width="16" height="22" fill="#ffd25a"/><path d="M70 44c-8-14-30-16-28-4 2 8 20 6 28 4zM70 44c8-14 30-16 28-4-2 8-20 6-28 4z" fill="#ffbf1f" stroke="#c98a00" stroke-width="2"/></g><text x="70" y="104" text-anchor="middle" font-family="Fredoka,Nunito,system-ui,sans-serif" font-weight="700" font-size="22" fill="#fff">?</text></svg>';
+let ac=null,wl=null,tick=null;
+const chime=()=>{try{if(!ac)return;[523,659,784,1047].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+i*.16;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.5);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+.55)})}catch(e){}};
+const commit=()=>{if(!D.timer)return;const s=(Date.now()-D.timer.start)/1000;D.days[D.timer.day]=(D.days[D.timer.day]||0)+s;const b=D.books.find(b=>b.id==D.timer.book);if(b)b.sec=(b.sec||0)+s;D.timer.start=Date.now();if(D.timer.day!=today())D.timer.day=today()};
+const award=()=>{const ks=Object.keys(D.days).filter(done).sort();let st=null,len=0,p=null,n=0;const run=()=>{for(let k=7;k<=len;k+=7){const id=st+'#'+k;if(!D.awarded.includes(id)){D.awarded.push(id);D.boxes.push({id:'x'+Date.now()+'-'+id,earned:today(),opened:null,prize:null});n++}}};for(const k of ks){if(p&&add(p,1)==k)len++;else{if(st)run();st=k;len=1}p=k}if(st)run();return n};
+const show=(html)=>{$('#celin').innerHTML=html;$('#cel').classList.add('on');const b=$('#celin button');if(b)b.focus()};
+const hide=()=>$('#cel').classList.remove('on');
+const ask=(html,btns)=>new Promise(res=>{const d=$('#dlg');d.innerHTML='<form method="dialog">'+html+'<div class="dbtns">'+btns.map(([v,l,c])=>'<button value="'+v+'" class="'+(c||'')+'">'+l+'</button>').join('')+'</div></form>';d.returnValue='';d.onclose=()=>res({v:d.returnValue,f:new FormData(d.querySelector('form'))});d.showModal()});
+const celebrate=()=>{chime();const n=award();save();show('<div class="pop">'+star(130)+'</div><h2>30 minutes!</h2><p>Today\'s star is yours. Streak: '+streak()+' day'+(streak()==1?'':'s')+'.</p>'+(n?'<p style="color:var(--red)">You earned a surprise box!</p><button class="btn red" data-go="prizes">Open it</button> ':'')+'<button class="btn" data-close>Keep reading</button>')};
+const startT=async()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}D.timer={start:Date.now(),day:today(),book:D.now};save();try{wl=await navigator.wakeLock.request('screen')}catch(e){}render()};
+const pauseT=()=>{commit();D.timer=null;award();save();try{wl&&wl.release()}catch(e){}wl=null;render()};
+const loop=()=>{clearInterval(tick);if(!D.timer)return;tick=setInterval(()=>{const s=live();if(s>=goal()&&!D.cel[today()]){D.cel[today()]=1;commit();save();celebrate()}paintRing()},500)};
+const paintRing=()=>{const r=$('#arc');if(!r)return;const s=live(),g=goal(),p=Math.min(1,s/g),C=2*Math.PI*108;r.style.strokeDashoffset=C*(1-p);r.style.stroke=p>=1?'var(--gold)':'var(--blue)';$('#rt').textContent=p>=1?'+'+mmss(s-g):mmss(g-s);$('#rl').textContent=p>=1?'bonus time':'left today';$('#rm').textContent=Math.floor(s/60)+' of '+D.goal+' minutes';};
+const head=()=>{const s=streak();$('#streak').innerHTML=flame+'<b>'+s+'</b><span>day streak'+(best()>s?' · best '+best():'')+'</span>';const u=D.boxes.filter(b=>!b.opened).length;const h=location.hash.slice(1)||'today';document.querySelectorAll('nav a').forEach(a=>{const v=a.getAttribute('href').slice(1);a.setAttribute('aria-current',v==h?'page':'false');a.innerHTML=a.textContent.replace(/\d+$/,'')+(v=='prizes'&&u?'<span class="dot">'+u+'</span>':'')})};
+const V={};
+V.today=()=>{const s=live(),g=goal(),C=2*Math.PI*108,run=!!D.timer,t=today(),d0=parse(t),sun=add(t,-d0.getDay()),st=streak(),fill=st%7==0&&st>0?7:st%7,u=D.boxes.filter(b=>!b.opened).length,bk=D.books.filter(b=>!b.done);
+return (u?'<a class="banner" href="#prizes">'+gift().replace('<svg','<svg width="56"')+'<span>You have '+u+' surprise box'+(u>1?'es':'')+' to open!</span></a>':'')+
+'<div class="grid2"><div class="card ringbox"><div class="ring"><svg viewBox="0 0 260 260"><circle cx="130" cy="130" r="108" fill="none" stroke="var(--rule)" stroke-width="24"/><circle id="arc" class="arc" cx="130" cy="130" r="108" fill="none" stroke="var(--blue)" stroke-width="24" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'" transform="rotate(-90 130 130)"/></svg><div class="c"><span class="t" id="rt"></span><span class="l" id="rl"></span></div></div>'+
+'<p class="sub" id="rm"></p><button class="go'+(run?' pause':'')+'" id="tg">'+(run?'Pause':s>=g?'Keep reading':s>0?'Resume reading':'Start reading')+'</button>'+
+'<label class="f" style="width:min(320px,100%)">Reading now<select id="nowsel">'+(bk.length?'':'<option value="">Add books in the Books tab</option>')+bk.map(b=>'<option value="'+esc(b.id)+'"'+(b.id==D.now?' selected':'')+'>'+esc(b.t)+'</option>').join('')+'</select></label></div>'+
+'<div><div class="card"><h2>This week</h2><div class="week">'+[...Array(7)].map((_,i)=>{const k=add(sun,i);return '<div class="'+(k==t?'today':'')+'">'+'SMTWTFS'[i]+'<span class="s">'+(done(k)?star(30):k<t?'':'')+'</span></div>'}).join('')+'</div></div>'+
+'<div class="card sec"><h2>Next surprise box</h2><div class="slots">'+[...Array(7)].map((_,i)=>'<i class="'+(i<fill?'on':'')+'"></i>').join('')+gift().replace('<svg','<svg width="56"')+'</div><p class="sub">'+(fill==7?'Box earned! Keep going for the next one.':(7-fill)+' more day'+(7-fill==1?'':'s')+' of 30 minutes in a row.')+'</p></div></div></div>'};
+let cm=null;
+V.calendar=()=>{const t=today();if(!cm)cm=t.slice(0,7);const[y,m]=cm.split('-').map(Number),first=new Date(y,m-1,1),nd=new Date(y,m,0).getDate(),ks=[...Array(nd)].map((_,i)=>cm+'-'+pad(i+1)),stars=ks.filter(done).length,mins=Math.round(ks.reduce((a,k)=>a+(D.days[k]||0),0)/60);
+return '<div class="card"><div class="mhead"><button class="icon" data-m="-1" aria-label="Previous month">‹</button><h2>'+first.toLocaleDateString('en-US',{month:'long',year:'numeric'})+'</h2><button class="icon" data-m="1" aria-label="Next month">›</button></div><div class="cal">'+'SMTWTFS'.split('').map(c=>'<span class="h">'+c+'</span>').join('')+'<span></span>'.repeat(first.getDay())+
+ks.map(k=>{const sc=D.days[k]||0,dn=done(k);return '<button data-day="'+k+'" class="'+(dn?'done ':'')+(k==t?'tod':'')+'"'+(k>t?' disabled':'')+' aria-label="'+nice(k)+', '+Math.round(sc/60)+' minutes"><span class="n">'+(+k.slice(8))+'</span>'+(dn?star(28):sc>0?'<span class="bar"><i style="width:'+Math.min(100,100*sc/goal())+'%"></i></span>':'')+'</button>'}).join('')+'</div>'+
+'<div class="figs"><div><b>'+stars+'</b><span>stars this month</span></div><div><b>'+mins+'</b><span>minutes this month</span></div><div><b>'+best()+'</b><span>best streak (days)</span></div></div><p class="note">Read away from the app? Tap a day to enter the minutes.</p></div>'};
+V.books=()=>{const bs=[...D.books].sort((a,b)=>lexN(a.lex)-lexN(b.lex)||a.t.localeCompare(b.t)),n=bs.filter(b=>b.done).length,ls=bs.map(b=>lexN(b.lex)).filter(Boolean);
+return '<div class="card"><h2>Book list</h2><p class="sub">'+n+' of '+bs.length+' finished'+(ls.length?' · Lexile '+Math.min(...ls)+'L to '+Math.max(...ls)+'L':'')+'</p><div class="prog"><i style="width:'+(bs.length?100*n/bs.length:0)+'%"></i></div>'+
+(bs.length?bs.map(b=>'<div class="book'+(b.done?' done-row':'')+'"><button class="chk'+(b.done?' on':'')+'" data-fin="'+esc(b.id)+'" aria-label="'+(b.done?'Unmark ':'Mark finished: ')+esc(b.t)+'">'+(b.done?'<svg viewBox="0 0 24 24" width="28"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</button><div><div class="bt">'+esc(b.t)+'</div><div class="ba">'+esc(b.a)+(b.g?' · '+esc(b.g):'')+(b.sec>=60?' · '+Math.round(b.sec/60)+' min read':'')+'</div>'+(b.done?'<span class="stamp">Finished '+nice(b.done)+'</span>':b.id==D.now?'<span class="now">Reading now</span>':'<button class="mini" data-now="'+esc(b.id)+'">Read this next</button>')+'</div><div style="display:grid;justify-items:end;gap:2px">'+(b.lex?'<span class="lex">'+esc(b.lex)+'</span>':'')+'<button class="mini" data-del="'+esc(b.id)+'" aria-label="Remove '+esc(b.t)+'">Remove</button></div></div>').join(''):'<p class="empty">No books yet. Add one below, or paste a list in the Parent tab.</p>')+
+'<form class="add" id="addf"><label class="f wide">Title<input name="t" id="nt" required autocomplete="off"></label><label class="f">Author<input name="a" id="na" autocomplete="off"></label><label class="f">Lexile<input name="l" id="nl" placeholder="650L" autocomplete="off"></label><button class="btn">Add book</button></form></div>'};
+V.prizes=()=>{const u=D.boxes.filter(b=>!b.opened),o=D.boxes.filter(b=>b.opened).reverse(),st=streak(),fill=st%7==0&&st>0?7:st%7;
+return '<div class="grid2"><div class="card"><h2>Surprise boxes</h2>'+(u.length?'<div class="boxes">'+u.map(b=>'<button class="gift" data-open="'+esc(b.id)+'">'+gift()+'Earned '+nice(b.earned)+'</button>').join('')+'</div><p class="note">Tap a box to open it.</p>':'<p class="empty">No boxes to open right now. '+(7-fill)+' more star day'+(7-fill==1?'':'s')+' in a row to earn the next one.</p>')+'</div>'+
+'<div class="card"><h2>Prizes won</h2>'+(o.length?'<ul class="hist">'+o.map(b=>'<li><span>'+esc(b.prize)+'</span><time>'+nice(b.opened)+'</time></li>').join('')+'</ul>':'<p class="empty">Your prizes will show up here.</p>')+'</div></div>'};
+V.parent=()=>'<div class="grid2"><div class="card"><h2>Settings</h2><label class="f">Daily goal (minutes)<input type="number" id="pg" min="5" max="180" value="'+D.goal+'"></label>'+
+'<label class="f sec">Prizes in the surprise box (one per line)<textarea id="pr">'+esc(D.rewards.join('\n'))+'</textarea></label><div class="row2"><button class="btn" id="savep">Save settings</button></div></div>'+
+'<div class="card"><h2>Add a book list</h2><p class="sub">One book per line: Title | Author | Lexile. Commas or tabs work too.</p><textarea id="imp" placeholder="Holes | Louis Sachar | 660L"></textarea><div class="row2"><button class="btn" id="doimp">Add these books</button></div>'+
+'<h2 class="sec">Backup</h2><p class="sub">Progress is saved on this device only. Copy a backup now and then.</p><textarea id="bk" readonly>'+esc(JSON.stringify(D))+'</textarea><div class="row2"><button class="btn alt" id="cpy">Copy backup</button><button class="btn alt" id="rst">Restore from pasted backup</button><button class="btn red" id="wipe">Start over</button></div></div></div>';
+const render=()=>{let h=location.hash.slice(1);if(!V[h])h='today';$('#view').innerHTML=V[h]();head();if(h=='today'){paintRing();loop()}else clearInterval(tick);if(h=='today'&&D.timer)loop()};
+window.addEventListener('hashchange',render);
+document.addEventListener('change',e=>{if(e.target.id=='nowsel'){if(D.timer)commit();D.now=e.target.value;if(D.timer)D.timer.book=D.now;save()}});
+document.addEventListener('submit',e=>{if(e.target.id!='addf')return;e.preventDefault();const t=$('#nt').value.trim();if(!t)return;let l=$('#nl').value.trim().toUpperCase();if(/^\d+$/.test(l))l+='L';D.books.push({id:'b'+Date.now(),t,a:$('#na').value.trim(),lex:l,done:null,sec:0});if(!D.now)D.now=D.books[D.books.length-1].id;save();render()});
+document.addEventListener('click',async e=>{const b=e.target.closest('button,[data-close]');if(e.target.id=='cel'){hide();return}if(!b)return;const ds=b.dataset;
+if('close' in ds){hide();return}
+if(ds.go){hide();location.hash=ds.go;return}
+if(b.id=='tg'){D.timer?pauseT():startT();return}
+if(ds.m){const[y,m]=cm.split('-').map(Number),d=new Date(y,m-1+(+ds.m),1);cm=d.getFullYear()+'-'+pad(d.getMonth()+1);render();return}
+if(ds.day){const k=ds.day,r=await ask('<h3>'+nice(k)+'</h3><label class="f">Minutes read<input type="number" name="m" min="0" max="600" value="'+Math.round((D.days[k]||0)/60)+'"></label>',[['','Cancel'],['ok','Save','p']]);if(r.v=='ok'){if(D.timer&&k==today())commit();D.days[k]=Math.max(0,+r.f.get('m')||0)*60;if(done(k)&&k==today())D.cel[k]=1;const n=award();save();render();if(n)show(gift('pop')+'<h2>Surprise box!</h2><p>'+n+' new box'+(n>1?'es':'')+' for a 7-day streak.</p><button class="btn red" data-go="prizes">Open it</button>')}return}
+if(ds.fin){const bk=D.books.find(x=>x.id==ds.fin);if(bk.done){const r=await ask('<h3>Unmark this book?</h3><p>'+esc(bk.t)+' will go back on the to-read list.</p>',[['','Cancel'],['ok','Unmark','r']]);if(r.v=='ok'){bk.done=null;save();render()}return}
+const r=await ask('<h3>Finished '+esc(bk.t)+'?</h3><label class="f">Date finished<input type="date" name="d" value="'+today()+'" max="'+today()+'"></label>',[['','Not yet'],['ok','I finished it!','p']]);if(r.v=='ok'){bk.done=r.f.get('d')||today();if(D.now==bk.id){const nx=D.books.filter(x=>!x.done).sort((a,b)=>lexN(a.lex)-lexN(b.lex))[0];D.now=nx?nx.id:'';if(D.timer){commit();D.timer.book=D.now}}save();render();chime();const left=D.books.filter(x=>!x.done).length;show('<div class="pop" style="display:inline-block;border:4px solid var(--ok);color:var(--ok);border-radius:12px;padding:10px 18px;transform:rotate(-4deg);font-family:Fredoka,Nunito,system-ui,sans-serif;font-size:30px;font-weight:700">FINISHED!</div><h2>'+esc(bk.t)+'</h2><p>'+(left?left+' book'+(left>1?'s':'')+' left on your list.':'You finished the whole list!')+'</p><button class="btn" data-close>Awesome</button>')}return}
+if(ds.now){D.now=ds.now;if(D.timer){commit();D.timer.book=D.now}save();render();return}
+if(ds.del){const bk=D.books.find(x=>x.id==ds.del);const r=await ask('<h3>Remove this book?</h3><p>'+esc(bk.t)+'</p>',[['','Cancel'],['ok','Remove','r']]);if(r.v=='ok'){D.books=D.books.filter(x=>x.id!=ds.del);if(D.now==ds.del)D.now='';save();render()}return}
+if(ds.open){const bx=D.boxes.find(x=>x.id==ds.open),last=D.boxes.filter(x=>x.prize).map(x=>x.prize).slice(-1)[0],pool=D.rewards.filter(r=>r!=last);bx.prize=(pool.length?pool:D.rewards)[Math.floor(Math.random()*(pool.length||D.rewards.length))]||'A big hug';bx.opened=today();save();show('<div id="gb" class="shake" style="width:180px;margin:0 auto">'+gift()+'</div><div id="pz" style="visibility:hidden"><h2>You got…</h2><div class="pz">'+esc(bx.prize)+'</div><button class="btn" data-close>Yay!</button></div>');chime();setTimeout(()=>{$('#gb').classList.add('opened');$('#pz').style.visibility='visible';$('#pz').classList.add('pop');$('#pz button').focus()},800);render();return}
+if(b.id=='savep'){D.goal=Math.max(5,Math.min(180,+$('#pg').value||30));D.rewards=$('#pr').value.split('\n').map(s=>s.trim()).filter(Boolean);save();render();show('<h2>Saved</h2><button class="btn" data-close>OK</button>');return}
+if(b.id=='doimp'){const ls=$('#imp').value.split('\n').map(s=>s.trim()).filter(Boolean);let n=0;ls.forEach((ln,i)=>{let p=ln.split(/\t|\|/).map(s=>s.trim());if(p.length==1)p=ln.split(',').map(s=>s.trim());let lex='';if(p.length>1&&/^(AD|HL|GN|NC|BR|IG|NP)?\s*\d{2,4}\s*L?$/i.test(p[p.length-1])){lex=p.pop().toUpperCase().replace(/\s/g,'');if(!/L$/.test(lex))lex+='L'}const t=p.shift();if(!t)return;D.books.push({id:'b'+Date.now()+'-'+i,t,a:p.join(', '),lex,done:null,sec:0});n++});if(!D.now&&D.books.length)D.now=D.books[0].id;save();render();show('<h2>'+n+' book'+(n==1?'':'s')+' added</h2><button class="btn" data-go="books">See the list</button>');return}
+if(b.id=='cpy'){try{await navigator.clipboard.writeText(JSON.stringify(D));b.textContent='Copied'}catch(err){$('#bk').select();b.textContent='Select all and copy'}return}
+if(b.id=='rst'){const r=await ask('<h3>Restore a backup</h3><label class="f">Paste the backup text<textarea name="j"></textarea></label>',[['','Cancel'],['ok','Restore','p']]);if(r.v=='ok'){try{const j=JSON.parse(r.f.get('j'));if(!j||typeof j!='object'||!j.days)throw 0;D=Object.assign(JSON.parse(JSON.stringify(DEF)),j);save();render();show('<h2>Restored</h2><button class="btn" data-close>OK</button>')}catch(err){show('<h2>That backup did not work</h2><p>Copy the whole backup text and try again.</p><button class="btn" data-close>OK</button>')}}return}
+if(b.id=='wipe'){const r=await ask('<h3>Start over?</h3><p>This erases every star, book and prize on this device.</p><label class="f">Type ERASE to confirm<input name="c" autocomplete="off"></label>',[['','Cancel'],['ok','Erase everything','r']]);if(r.v=='ok'&&r.f.get('c')=='ERASE'){D=JSON.parse(JSON.stringify(DEF));save();location.hash='today';render()}return}
+});
+document.addEventListener('keydown',e=>{if(e.key=='Escape')hide()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='visible'){render();if(D.timer)navigator.wakeLock?.request('screen').then(w=>wl=w).catch(()=>{})}});
+award();save();render();
 }
 </script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
