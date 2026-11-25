@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 2 Express</title>
+<meta name="theme-color" content="#16181c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Math Express">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday learning for a 4th grader who loves trains and buses
+   IDEA a transit line: each Module 2 standard is a coloured line, each problem a stop
+   PICTURE the route strip with a train that moves one stop per answer, then the big problem card
+   COLOUR white or near-black ground, black signage band, six line colours, the active line leads
+   TYPE Overpass (highway-signage lettering) 800 + 400
+   LAYOUT sign band with line bullets, route, then problem + keypad side by side; stacked on a phone */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#111316);--ink:light-dark(#15171a,#f1f2f4);--muted:light-dark(#575d66,#a7adb6);--panel:light-dark(#f2f3f5,#1c1f24);--rule:light-dark(#d5d8de,#353941);--ok:#0a8f5a;--bad:#d8342a;--line:#1565d8}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 Overpass,system-ui,sans-serif;overflow-x:clip}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--line);outline-offset:2px}
+.sign{background:#16181c;color:#fff;padding:18px max(4vw,16px) 16px}
+.sign h1{margin:0;font-size:clamp(30px,5vw,44px);line-height:1.05;letter-spacing:-.02em;font-weight:800}
+.sign p{margin:4px 0 14px;color:#c4c8ce;font-size:15px}
+.lines{display:flex;flex-wrap:wrap;gap:8px}
+.lines button{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 14px 4px 5px;border-radius:24px;border:2px solid #3a3e45;background:#22252a;color:#fff;font-weight:600;font-size:15px}
+.lines button[aria-pressed=true]{background:#fff;color:#16181c;border-color:#fff}
+.bul{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;color:#fff;font-weight:800;font-size:16px;flex:none}
+.ride{padding:14px max(4vw,16px) 0;max-width:1100px;margin:0 auto}
+.stat{display:flex;justify-content:space-between;gap:12px;font-size:15px;color:var(--muted);font-weight:600}
+.stat b{color:var(--ink)}
+.track{position:relative;height:86px}
+#route{position:absolute;inset:0;width:100%;height:100%}
+.train{position:absolute;top:24px;width:52px;height:30px;margin-left:-26px;transition:left .6s cubic-bezier(.5,0,.3,1)}
+@media(prefers-reduced-motion:reduce){.train{transition:none}}
+.play{max-width:1100px;margin:0 auto;padding:8px max(4vw,16px) 28px;display:grid;gap:18px}
+@media(min-width:860px){.play{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start}}
+.card{background:var(--panel);border-radius:18px;padding:clamp(18px,3vw,28px);border-top:8px solid var(--line)}
+.tag{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--muted);margin-bottom:10px}
+.tag .bul{width:26px;height:26px;font-size:14px}
+.q{font-size:clamp(22px,3.4vw,30px);line-height:1.3;font-weight:600;margin:0 0 12px}
+.q .big{font-size:clamp(30px,6vw,46px);font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.fig svg{width:100%;max-width:380px;height:auto;display:block}
+.ans{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
+.box{min-width:120px;min-height:60px;padding:8px 16px;border-radius:12px;border:3px solid var(--rule);background:var(--bg);font-size:32px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
+.box.on{border-color:var(--line)}
+.box small{font-size:16px;font-weight:600;color:var(--muted)}
+.box .cur{width:3px;height:30px;background:var(--line);animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+.rlab{font-size:22px;font-weight:800}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+.choices button{min-height:60px;border-radius:12px;border:3px solid var(--rule);background:var(--bg);font-size:22px;font-weight:800}
+.choices button.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--bg))}
+.choices button.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--bg))}
+.fb{margin-top:16px;border-radius:12px;padding:14px 16px;background:var(--bg);border-left:6px solid var(--ok)}
+.fb.bad{border-color:var(--bad)}
+.fb h3{margin:0 0 6px;font-size:21px}
+.fb p{margin:6px 0}
+.am{border-collapse:collapse;margin:8px 0;font-variant-numeric:tabular-nums}
+.am td,.am th{border:2px solid var(--rule);padding:6px 10px;text-align:center;white-space:nowrap}
+.am th{background:color-mix(in srgb,var(--line) 16%,var(--bg))}
+.am td{background:var(--panel);font-weight:600}
+.tape{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center;margin:8px 0;font-size:15px}
+.tape .bar{display:flex;flex-wrap:wrap;gap:3px}
+.tape .bar span{min-width:38px;padding:3px 6px;text-align:center;border:2px solid var(--line);border-radius:4px;font-weight:700}
+.steps{margin:6px 0;padding-left:20px;font-variant-numeric:tabular-nums}
+.pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pad button{min-height:64px;border-radius:14px;border:2px solid var(--rule);background:var(--panel);font-size:28px;font-weight:800}
+.pad button:active{transform:translateY(2px)}
+.pad .go{background:var(--line);border-color:var(--line);color:#fff;font-size:21px}
+.pad .wide{grid-column:1/-1;min-height:56px}
+.next{margin-top:12px;min-height:54px;padding:0 26px;border:0;border-radius:14px;background:var(--line);color:#fff;font-size:20px;font-weight:800}
+.end h2{font-size:clamp(32px,5vw,48px);line-height:1.05;margin:0 0 8px;letter-spacing:-.02em}
+.end .btns{display:flex;flex-wrap:wrap;gap:10px}
+.end .alt{background:var(--panel);color:var(--ink);border:2px solid var(--rule)}
+.tot h3{font-size:18px;margin:4px 0 10px}
+.row{display:grid;grid-template-columns:8.5em minmax(0,1fr) 4.5em;gap:10px;align-items:center;font-size:15px;margin:6px 0}
+.row .m{height:12px;border-radius:6px;background:var(--rule);overflow:hidden}
+.row .m i{display:block;height:100%}
+.row .v{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+</style>
+</head>
+<body>
+<header class="sign">
+  <h1>Module 2 Express</h1>
+  <p>Wesley's practice line · 10 stops a trip · pick a line or ride them all</p>
+  <nav class="lines" id="lines" aria-label="Choose a line"></nav>
+</header>
+<section class="ride">
+  <div class="stat"><span id="where"></span><span id="score"></span></div>
+  <div class="track" id="track"><svg id="route" aria-hidden="true"></svg>
+    <svg class="train" id="train" viewBox="0 0 52 30" aria-hidden="true"><rect x="1" y="1" width="50" height="24" rx="8" fill="var(--line)"/><rect x="6" y="6" width="9" height="8" rx="2" fill="#fff"/><rect x="18" y="6" width="9" height="8" rx="2" fill="#fff"/><rect x="30" y="6" width="9" height="8" rx="2" fill="#fff"/><rect x="42" y="6" width="6" height="12" rx="2" fill="#fff" opacity=".85"/><circle cx="12" cy="27" r="3" fill="var(--ink)"/><circle cx="40" cy="27" r="3" fill="var(--ink)"/></svg>
+  </div>
+</section>
+<main class="play">
+  <div class="card" id="card"></div>
+  <div id="side"></div>
+</main>
+<script>
+{
+const $=s=>document.querySelector(s);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[R(0,a.length-1)];
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const f=n=>Number(n).toLocaleString('en-US');
+const L={A:{n:'Measure',full:'Measurement, area & perimeter',c:'#e03a2f'},B:{n:'Multiply',full:'Multi-digit multiplication',c:'#1565d8'},C:{n:'Divide',full:'Division with remainders',c:'#7b3fe4'},D:{n:'Compare',full:'Times as many',c:'#d98a00'},E:{n:'Factors',full:'Factors, multiples, primes',c:'#00838f'},F:{n:'Patterns',full:'Number patterns',c:'#d6336c'}};
+const ALL={n:'All lines',c:'#15171a'};
+const isP=n=>{if(n<2)return false;for(let i=2;i*i<=n;i++)if(n%i==0)return false;return true};
+const pairs=n=>{const p=[];for(let i=1;i*i<=n;i++)if(n%i==0)p.push(i+' × '+n/i);return p};
+const parts=n=>{const s=String(n),o=[];[...s].forEach((d,i)=>{if(d!='0')o.push(+d*10**(s.length-1-i))});return o.length?o:[0]};
+const area=(a,b)=>{const r=parts(a),c=parts(b),pp=[];let h='<table class="am"><tr><th>×</th>'+c.map(x=>'<th>'+f(x)+'</th>').join('')+'</tr>';r.forEach(x=>{h+='<tr><th>'+f(x)+'</th>'+c.map(y=>{pp.push(x*y);return '<td>'+f(x*y)+'</td>'}).join('')+'</tr>'});return h+'</table><p>Add the parts: '+pp.map(f).join(' + ')+' = <b>'+f(a*b)+'</b></p>'};
+const divs=(n,d)=>{let r=n;const st=[];for(const p of [1000,100,10,1]){const k=Math.floor(r/(d*p));if(k>0){st.push(d+' × '+f(k*p)+' = '+f(d*k*p)+', leaving '+f(r-d*k*p));r-=d*k*p}}return '<ol class="steps">'+st.map(s=>'<li>'+s+'</li>').join('')+'</ol>'};
+const tape=(rows)=>'<div class="tape">'+rows.map(([lab,k,v])=>'<span>'+lab+'</span><div class="bar">'+Array(k).fill('<span>'+v+'</span>').join('')+'</div>').join('')+'</div>';
+const rect=(Lv,W,ll,wl)=>{const s=Math.min(210/Lv,110/W),w=Lv*s,h=W*s,x=(300-w)/2-20,y=30;return '<svg viewBox="0 0 300 '+(h+44)+'"><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="color-mix(in srgb,var(--line) 18%,transparent)" stroke="var(--line)" stroke-width="3"/><text x="'+(x+w/2)+'" y="20" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">'+ll+'</text><text x="'+(x+w+10)+'" y="'+(y+h/2+6)+'" font-size="17" font-weight="700" fill="currentColor">'+wl+'</text></svg>'};
+const G={
+A:[()=>{const u=pick([['ft','in',12],['yd','ft',3],['yd','in',36],['hr','min',60],['min','sec',60],['kg','g',1000],['L','mL',1000],['m','cm',100],['km','m',1000],['lb','oz',16]]),n=R(2,9);return {q:'<span class="big">'+n+' '+u[0]+' = ? '+u[1]+'</span>',ans:n*u[2],unit:u[1],ex:'<p>1 '+u[0]+' = '+f(u[2])+' '+u[1]+', so multiply: '+n+' × '+f(u[2])+' = <b>'+f(n*u[2])+' '+u[1]+'</b>.</p>'}},
+()=>{const u=pick([['ft','in',12],['hr','min',60],['lb','oz',16],['m','cm',100]]),n=R(2,8),m=R(1,u[2]-1);return {q:'<span class="big">'+n+' '+u[0]+' '+m+' '+u[1]+' = ? '+u[1]+'</span>',ans:n*u[2]+m,unit:u[1],ex:'<p>'+n+' '+u[0]+' = '+n+' × '+u[2]+' = '+f(n*u[2])+' '+u[1]+'. Then add the extra '+m+': <b>'+f(n*u[2]+m)+' '+u[1]+'</b>.</p>'}},
+()=>{const c=pick([10,20,25,50]),m=R(1,5);return {q:'A ribbon is '+m+' m long. It is cut into pieces that are each '+c+' cm long. How many pieces?',ans:100*m/c,unit:'pieces',ex:'<p>Change meters to centimeters first: '+m+' m = '+100*m+' cm. Then '+100*m+' ÷ '+c+' = <b>'+100*m/c+' pieces</b>.</p>'}},
+()=>{const Lv=R(4,15),W=R(2,Math.min(Lv-1,11)),t=R(0,3),u=pick(['m','ft','cm','yd']);
+if(t==0)return {q:'What is the <b>area</b> of this rectangle?',fig:rect(Lv,W,Lv+' '+u,W+' '+u),ans:Lv*W,unit:'sq '+u,ex:'<p>Area = length × width = '+Lv+' × '+W+' = <b>'+Lv*W+' square '+u+'</b>.</p>'};
+if(t==1)return {q:'What is the <b>perimeter</b> of this rectangle?',fig:rect(Lv,W,Lv+' '+u,W+' '+u),ans:2*(Lv+W),unit:u,ex:'<p>Perimeter = add all four sides: '+Lv+' + '+W+' + '+Lv+' + '+W+' = <b>'+2*(Lv+W)+' '+u+'</b>.</p>'};
+if(t==2)return {q:'The area is <b>'+Lv*W+' sq '+u+'</b>. What is the missing side?',fig:rect(Lv,W,Lv+' '+u,'?'),ans:W,unit:u,ex:'<p>Length × ? = area, so ? = '+Lv*W+' ÷ '+Lv+' = <b>'+W+' '+u+'</b>.</p>'};
+return {q:'The perimeter is <b>'+2*(Lv+W)+' '+u+'</b>. What is the missing side?',fig:rect(Lv,W,Lv+' '+u,'?'),ans:W,unit:u,ex:'<p>Take away the two long sides: '+2*(Lv+W)+' − '+Lv+' − '+Lv+' = '+2*W+'. The two short sides share that, so '+2*W+' ÷ 2 = <b>'+W+' '+u+'</b>.</p>'}}],
+B:[()=>{const a=R(2,9),d=R(2,4),b=R(10**(d-1)+1,10**d-1);return {q:'<span class="big">'+a+' × '+f(b)+' = ?</span>',ans:a*b,ex:area(a,b)}},
+()=>{const a=R(11,99),b=R(11,99);return {q:'<span class="big">'+a+' × '+b+' = ?</span>',ans:a*b,ex:area(a,b)}},
+()=>{const a=R(12,64),b=R(11,39),t=pick([['A city bus holds '+a+' riders. How many riders fit on '+b+' full buses?','riders'],['A train car has '+a+' seats. How many seats are on '+b+' train cars?','seats'],['Wesley rides his bike '+a+' miles a month. How many miles is that in '+b+' months?','miles']]);return {q:t[0],ans:a*b,unit:t[1],ex:'<p>Equation: '+a+' × '+b+' = ?</p>'+area(a,b)}}],
+C:[()=>{const d=R(2,9),q=R(12,Math.floor(9999/d)),r=R(0,2)?R(1,d-1):0,n=d*q+r;return {q:'<span class="big">'+f(n)+' ÷ '+d+' = ?</span>',kind:'qr',ans:[q,r],ex:divs(n,d)+'<p>Quotient '+f(q)+', remainder '+r+'. Check: '+d+' × '+f(q)+' + '+r+' = '+f(n)+'.</p>'}},
+()=>{const d=R(4,9),q=R(8,30),r=R(1,d-1),n=d*q+r,t=R(0,1);return t?{q:n+' students are going on a field trip. Each van holds '+d+'. How many vans are needed so everyone gets a ride?',ans:q+1,unit:'vans',ex:'<p>'+n+' ÷ '+d+' = '+q+' R'+r+'. '+q+' vans are full, but '+r+' students still need a seat, so you need <b>'+(q+1)+' vans</b>.</p>'}:{q:'A bakery packs '+n+' cookies, '+d+' to a box. How many cookies are left after filling as many boxes as it can?',ans:r,unit:'cookies',ex:'<p>'+n+' ÷ '+d+' = '+q+' R'+r+'. '+q+' full boxes use '+d*q+' cookies, leaving <b>'+r+'</b>.</p>'}}],
+D:[()=>{const a=R(3,12),k=R(2,9),t=pick([['Wesley rode his bike '+a+' miles. His dad rode '+k+' times as far. How many miles did his dad ride?','miles','Wesley','Dad'],[''+a+' people wait at a bus stop. The train platform has '+k+' times as many people. How many are on the platform?','people','Bus stop','Platform']]);return {q:t[0],ans:a*k,unit:t[1],ex:tape([[t[2],1,a],[t[3],k,a]])+'<p>"'+k+' times as many" means multiply: '+a+' × '+k+' = <b>'+a*k+'</b>.</p>'}},
+()=>{const s=R(6,15),k=R(3,9),b=s*k,t=pick([['An express train is '+b+' meters long. That is '+k+' times as long as a city bus. How long is the bus?','m','Bus','Train'],['A subway car has '+b+' seats. That is '+k+' times as many seats as a van. How many seats does the van have?','seats','Van','Subway car']]);return {q:t[0],ans:s,unit:t[1],ex:tape([[t[2],1,'?'],[t[3],k,'?']])+'<p>'+k+' equal parts make '+b+', so one part is '+b+' ÷ '+k+' = <b>'+s+'</b>. Equation: ? × '+k+' = '+b+'.</p>'}},
+()=>{const s=R(4,15),k=R(2,8),b=s*k,more=R(0,1);return {q:'The express train carried '+b+' riders. The bus carried '+s+'. '+(more?'How many <b>more</b> riders did the train carry?':'The train carried how many <b>times as many</b> riders as the bus?'),ans:more?b-s:k,unit:more?'more':'times',ex:more?'<p>"How many more" means subtract: '+b+' − '+s+' = <b>'+(b-s)+'</b>.</p>':'<p>"How many times as many" means divide: '+b+' ÷ '+s+' = <b>'+k+'</b>.</p>'}}],
+E:[()=>{const pr=R(0,1);let n;do n=R(2,100);while(isP(n)!=!!pr);return {q:'Is <span class="big">'+n+'</span> prime or composite?',kind:'ch',ch:['Prime','Composite'],ans:pr?'Prime':'Composite',ex:'<p>Factor pairs of '+n+': '+pairs(n).join(', ')+'.</p><p>'+(pr?'Only one pair (1 and itself), so it is <b>prime</b>.':'More than one pair, so it is <b>composite</b>.')+'</p>'}},
+()=>{const d=R(3,9),y=R(0,1);let n;do n=R(12,100);while((n%d==0)!=!!y);return {q:'Is '+n+' a multiple of '+d+'?',kind:'ch',ch:['Yes','No'],ans:y?'Yes':'No',ex:y?'<p>'+d+' × '+n/d+' = '+n+', so <b>yes</b>.</p>':'<p>'+d+' × '+Math.floor(n/d)+' = '+d*Math.floor(n/d)+' and '+d+' × '+(Math.floor(n/d)+1)+' = '+d*(Math.floor(n/d)+1)+'. '+n+' is skipped, so <b>no</b>.</p>'}},
+()=>{const n=pick([12,16,18,20,24,28,30,32,36,40,42,45,48,50,54,56,60,63,64,72,80,84,90,96,100]),p=pairs(n);return {q:'How many factor pairs does <span class="big">'+n+'</span> have?',ans:p.length,unit:'pairs',ex:'<p>'+p.join(', ')+' — that is <b>'+p.length+' pairs</b>.</p>'}},
+()=>{const n=pick([24,30,36,40,42,48,54,56,60,64,72,80,84,90,96]),fs=[];for(let i=2;i<n;i++)if(n%i==0&&i<=15)fs.push(i);const a=pick(fs),no=shuf([...Array(14)].map((_,i)=>i+2).filter(i=>n%i)).slice(0,3);return {q:'Which number is a factor of '+n+'?',kind:'ch',ch:shuf([a,...no].map(String)),ans:String(a),ex:'<p>'+a+' × '+n/a+' = '+n+', so <b>'+a+'</b> is a factor. The others leave a remainder.</p>'}}],
+F:[()=>{const s=R(1,20),k=R(2,12),t=[0,1,2,3].map(i=>s+i*k);return {q:'Rule: add '+k+'.<br><span class="big">'+t.join(', ')+', ?</span>',ans:s+4*k,ex:'<p>'+t[3]+' + '+k+' = <b>'+(s+4*k)+'</b>.</p>'}},
+()=>{const s=R(2,5),k=pick([2,3]),t=[0,1,2,3].map(i=>s*k**i);return {q:'Find the rule, then the next number.<br><span class="big">'+t.join(', ')+', ?</span>',ans:s*k**4,ex:'<p>Each number is '+k+' times the one before. '+t[3]+' × '+k+' = <b>'+s*k**4+'</b>.</p>'}},
+()=>{const a=R(3,6),b=R(2,5),n=R(6,12);return {q:'Figure 1 uses '+a+' toothpicks. Each new figure adds '+b+' more. How many toothpicks are in figure '+n+'?',ans:a+(n-1)*b,unit:'toothpicks',ex:'<p>From figure 1 to figure '+n+' is '+(n-1)+' steps of '+b+': '+a+' + '+(n-1)+' × '+b+' = <b>'+(a+(n-1)*b)+'</b>.</p>'}},
+()=>{const s=R(1,9),k=2*R(1,4),y=R(0,1),x=y?s+k*R(8,14):s+k*R(8,14)+1,t=[0,1,2,3].map(i=>s+i*k);return {q:'The rule is add '+k+': '+t.join(', ')+', … Will '+x+' be in this pattern?',kind:'ch',ch:['Yes','No'],ans:y?'Yes':'No',ex:'<p>Starting at '+s+' and adding an even number keeps every number '+(s%2?'odd':'even')+'. '+(y?x+' = '+s+' + '+k+' × '+(x-s)/k+', so <b>yes</b>.':x+' is '+(x%2?'odd':'even')+', so <b>no</b>.')+'</p>'}}]};
+let stats={};try{stats=JSON.parse(localStorage.getItem('m2x')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('m2x',JSON.stringify(stats))}catch(e){}};
+const S={line:'all',list:[],res:[],i:0,inp:['',''],fld:0,done:false,picked:null,misses:[]};
+let last='';
+const gen=t=>{let g,k;do{k=R(0,G[t].length-1);g=t+k}while(g==last&&G[t].length>1);last=g;return Object.assign({t,kind:'num'},G[t][k]())};
+const trip=(list)=>{S.list=list||[...Array(10)].map(()=>gen(S.line=='all'?pick('ABCDEF'.split('')):S.line));S.res=[];S.i=0;S.misses=[];start()};
+const start=()=>{S.inp=['',''];S.fld=0;S.done=false;S.picked=null;render()};
+const cur=()=>S.list[S.i];
+const col=()=>S.i<S.list.length?L[cur().t].c:(S.line=='all'?ALL.c:L[S.line].c);
+const lines=()=>{$('#lines').innerHTML=[['all',ALL]].concat(Object.entries(L)).map(([k,v])=>'<button data-l="'+k+'" aria-pressed="'+(S.line==k)+'"><span class="bul" style="background:'+(k=='all'?'#5d636c':v.c)+'">'+(k=='all'?'★':k)+'</span>'+v.n+'</button>').join('')};
+const draw=()=>{const s=$('#route'),W=s.clientWidth,H=s.clientHeight,n=S.list.length,m=26,y=58,x=i=>n<2?W/2:m+i*(W-2*m)/(n-1);let h='<line x1="'+m+'" y1="'+y+'" x2="'+(W-m)+'" y2="'+y+'" stroke="var(--rule)" stroke-width="8" stroke-linecap="round"/>';
+if(S.res.length)h+='<line x1="'+m+'" y1="'+y+'" x2="'+x(S.res.length-1)+'" y2="'+y+'" stroke="'+col()+'" stroke-width="8" stroke-linecap="round"/>';
+S.list.forEach((p,i)=>{const r=S.res[i],c=L[p.t].c,on=i==S.i;h+='<circle cx="'+x(i)+'" cy="'+y+'" r="'+(on?12:9)+'" fill="'+(r=='ok'?c:'var(--bg)')+'" stroke="'+(r=='miss'?'var(--bad)':r?c:on?col():'var(--muted)')+'" stroke-width="'+(on?5:3)+'"/>';if(r=='miss')h+='<path d="M'+(x(i)-4)+' '+(y-4)+'l8 8m0-8l-8 8" stroke="var(--bad)" stroke-width="2.5"/>'});
+s.innerHTML=h;$('#train').style.left=x(Math.min(S.i,n-1))+'px'};
+const ro=new ResizeObserver(draw);ro.observe($('#track'));
+const box=i=>'<div class="box'+(S.fld==i&&!S.done?' on':'')+'" data-f="'+i+'"><span>'+(S.inp[i]?f(S.inp[i]):'')+'</span>'+(S.fld==i&&!S.done?'<i class="cur"></i>':'')+'</div>';
+const render=()=>{document.documentElement.style.setProperty('--line',col());lines();
+const ok=S.res.filter(r=>r=='ok').length;$('#score').innerHTML='<b>'+ok+'</b> correct';
+if(S.i>=S.list.length)return end();
+const p=cur(),l=L[p.t];$('#where').innerHTML='Stop <b>'+(S.i+1)+'</b> of '+S.list.length;
+let a='';if(p.kind=='num')a=box(0)+(p.unit?'<small class="rlab" style="font-size:18px;color:var(--muted)">'+p.unit+'</small>':'');
+else if(p.kind=='qr')a=box(0)+'<span class="rlab">R</span>'+box(1);
+else a='<div class="choices">'+p.ch.map(c=>'<button data-c="'+c+'" class="'+(S.done&&c==p.ans?'ok':S.done&&c==S.picked?'bad':'')+'"'+(S.done?' disabled':'')+'>'+c+'</button>').join('')+'</div>';
+let fb='';if(S.done){const good=S.res[S.i]=='ok';fb='<div class="fb'+(good?'':' bad')+'"><h3>'+(good?pick(['Correct!','Nice work!','Right on track!','You got it!']):'Not quite. The answer is '+(p.kind=='qr'?f(p.ans[0])+' R'+p.ans[1]:p.kind=='ch'?p.ans:f(p.ans)+(p.unit?' '+p.unit:''))+'.')+'</h3>'+p.ex+'</div><button class="next" id="next">'+(S.i==S.list.length-1?'Last stop →':'Next stop →')+'</button>'}
+$('#card').innerHTML='<div class="tag"><span class="bul" style="background:'+l.c+'">'+p.t+'</span>'+l.full+'</div><p class="q">'+p.q+'</p>'+(p.fig?'<div class="fig">'+p.fig+'</div>':'')+'<div class="ans">'+a+'</div>'+fb;
+$('#side').innerHTML=p.kind=='ch'||S.done?totals():'<div class="pad">'+[7,8,9,4,5,6,1,2,3].map(d=>'<button data-k="'+d+'">'+d+'</button>').join('')+'<button data-k="del" aria-label="Delete">⌫</button><button data-k="0">0</button><button data-k="go" class="go">Check</button></div>';
+draw();if(S.done)$('#next').focus()};
+const totals=()=>'<div class="card tot" style="border-top-color:var(--rule)"><h3>Wesley\'s line totals</h3>'+Object.entries(L).map(([k,v])=>{const s=stats[k]||[0,0],pc=s[1]?Math.round(100*s[0]/s[1]):0;return '<div class="row"><span><span class="bul" style="background:'+v.c+';width:22px;height:22px;font-size:12px">'+k+'</span> '+v.n+'</span><span class="m"><i style="width:'+pc+'%;background:'+v.c+'"></i></span><span class="v">'+s[0]+'/'+s[1]+'</span></div>'}).join('')+'<p class="note">Saved on this device. Weakest line is the best one to ride next.</p></div>';
+const end=()=>{const ok=S.res.filter(r=>r=='ok').length,n=S.list.length;$('#where').innerHTML='<b>Last stop</b>';
+$('#card').innerHTML='<div class="end"><h2>'+(ok==n?'Perfect trip!':ok>=n*.7?'Great ride!':'Trip complete')+'</h2><p class="q">'+ok+' of '+n+' correct'+(S.misses.length?'. '+S.misses.length+' to fix.':'.')+'</p><div class="btns"><button class="next" id="again">New trip</button>'+(S.misses.length?'<button class="next alt" id="redo">Ride the misses ('+S.misses.length+')</button>':'')+'</div></div>';
+$('#side').innerHTML=totals();draw()};
+const check=()=>{const p=cur();let good;
+if(p.kind=='num'){if(S.inp[0]==='')return;good=+S.inp[0]===p.ans}
+else if(p.kind=='qr'){if(S.inp[0]==='')return;if(S.fld==0&&S.inp[1]===''){S.fld=1;return render()}if(S.inp[1]==='')return;good=+S.inp[0]===p.ans[0]&&+S.inp[1]===p.ans[1]}
+else good=S.picked===p.ans;
+S.res[S.i]=good?'ok':'miss';if(!good)S.misses.push(p);const s=stats[p.t]||[0,0];stats[p.t]=[s[0]+(good?1:0),s[1]+1];save();S.done=true;render()};
+const key=k=>{if(S.i>=S.list.length)return;if(S.done){if(k=='go'){S.i++;start()}return}const p=cur();if(p.kind=='ch')return;
+if(k=='go')return check();if(k=='del')S.inp[S.fld]=S.inp[S.fld].slice(0,-1);else if(k=='tab'){if(p.kind=='qr')S.fld=1-S.fld}else if(S.inp[S.fld].length<6)S.inp[S.fld]=(S.inp[S.fld]+k).replace(/^0+(?=\d)/,'');render()};
+document.addEventListener('click',e=>{const b=e.target.closest('button,[data-f]');if(!b)return;
+if(b.dataset.l){S.line=b.dataset.l;trip();return}
+if(b.dataset.k)return key(b.dataset.k);
+if(b.dataset.f&&!S.done){S.fld=+b.dataset.f;return render()}
+if(b.dataset.c&&!S.done){S.picked=b.dataset.c;return check()}
+if(b.id=='next'){S.i++;return start()}
+if(b.id=='again')return trip();
+if(b.id=='redo')return trip(S.misses.map(p=>p))});
+document.addEventListener('keydown',e=>{const t=e.target.closest?e.target.closest('button'):null;if(/^\d$/.test(e.key))key(e.key);else if(e.key=='Backspace')key('del');else if(e.key=='Enter'){if(t&&(t.dataset.c||t.id=='again'||t.id=='redo')&&!(S.done&&t.dataset.c))return;e.preventDefault();key('go')}else if(e.key=='Tab'&&S.i<S.list.length&&cur().kind=='qr'&&!S.done){e.preventDefault();key('tab')}});
+trip();
+}
+</script>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+</body>
+</html>
